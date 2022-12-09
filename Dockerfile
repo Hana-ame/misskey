@@ -8,8 +8,11 @@ COPY . ./
 
 RUN apt-get update
 RUN apt-get install -y build-essential
+RUN git config --global http.proxy http://host.docker.internal:10809
 RUN git submodule update --init
-RUN yarn install
+RUN yarn config set proxy http://host.docker.internal:10809
+RUN yarn config set https-proxy http://host.docker.internal:10809
+RUN yarn install --proxy http://host.docker.internal:10809
 RUN yarn build
 RUN rm -rf .git
 

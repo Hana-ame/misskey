@@ -55,7 +55,7 @@ port: 3000 # A port that your Misskey server should listen.
 #───┘ PostgreSQL configuration └────────────────────────────────
 
 db:
-  host: localhost
+  host: misskey-db-1.misskey_internal_network
   port: 5432
 
   # Database name
@@ -76,7 +76,7 @@ db:
 #───┘ Redis configuration └─────────────────────────────────────
 
 redis:
-  host: localhost
+  host: misskey-redis-1.misskey_internal_network
   port: 6379
   #pass: example-pass
   #prefix: example-prefix
