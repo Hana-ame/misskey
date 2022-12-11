@@ -6,7 +6,7 @@
 #───┘ URL └─────────────────────────────────────────────────────
 
 # Final accessible URL seen by a user.
-url: https://example.tld/
+url: http://localhost:3000/
 
 # ONCE YOU HAVE STARTED THE INSTANCE, DO NOT CHANGE THE
 # URL SETTINGS AFTER THAT!
@@ -34,7 +34,7 @@ port: 3000
 #───┘ PostgreSQL configuration └────────────────────────────────
 
 db:
-  host: 172.20.0.3
+  host: misskey-db-1.misskey_internal_network
   port: 5432
 
   # Database name
@@ -55,7 +55,7 @@ db:
 #───┘ Redis configuration └─────────────────────────────────────
 
 redis:
-  host: 172.20.0.2
+  host: misskey-redis-1.misskey_internal_network
   port: 6379
   #family: 0  # 0=Both, 4=IPv4, 6=IPv6
   #pass: example-pass
