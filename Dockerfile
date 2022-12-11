@@ -6,6 +6,9 @@ WORKDIR /misskey
 
 COPY . ./
 
+ENV http_proxy http://host.docker.internal:10809
+ENV https_proxy http://host.docker.internal:10809
+
 RUN apt-get update
 RUN apt-get install -y build-essential
 
