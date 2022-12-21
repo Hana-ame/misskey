@@ -9,10 +9,10 @@ import ms from 'ms';
 import sharp from 'sharp';
 import pug from 'pug';
 import { In, IsNull } from 'typeorm';
-import { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyView from '@fastify/view';
 import fastifyCookie from '@fastify/cookie';
+import fastifyProxy from '@fastify/http-proxy';
 import type { Config } from '@/config.js';
 import { getNoteSummary } from '@/misc/get-note-summary.js';
 import { DI } from '@/di-symbols.js';
@@ -31,6 +31,7 @@ import { bindThis } from '@/decorators.js';
 import manifest from './manifest.json' assert { type: 'json' };
 import { FeedService } from './FeedService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
+import type { FastifyInstance, FastifyPluginOptions, FastifyReply } from 'fastify';
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
@@ -39,6 +40,7 @@ const staticAssets = `${_dirname}/../../../assets/`;
 const clientAssets = `${_dirname}/../../../../client/assets/`;
 const assets = `${_dirname}/../../../../../built/_client_dist_/`;
 const swAssets = `${_dirname}/../../../../../built/_sw_dist_/`;
+const viteOut = `${_dirname}/../../../../../built/_vite_/`;
 
 @Injectable()
 export class ClientServerService {
@@ -151,9 +153,6 @@ export class ClientServerService {
 			},
 			defaultContext: {
 				version: this.config.version,
-				getClientEntry: () => process.env.NODE_ENV === 'production' ?
-					this.config.clientEntry :
-					JSON.parse(readFileSync(`${_dirname}/../../../../../built/_client_dist_/manifest.json`, 'utf-8'))['src/init.ts'],
 				config: this.config,
 			},
 		});
@@ -163,6 +162,23 @@ export class ClientServerService {
 			reply.header('X-Frame-Options', 'DENY');
 			done();
 		});
+
+		//#region vite assets
+		if (this.config.clientManifestExists) {
+			fastify.register(fastifyStatic, {
+				root: viteOut,
+				prefix: '/vite/',
+				maxAge: ms('30 days'),
+				decorateReply: false,
+			});
+		} else {
+			fastify.register(fastifyProxy, {
+				upstream: 'http://localhost:5173', // TODO: port configuration
+				prefix: '/vite',
+				rewritePrefix: '/vite',
+			});
+		}
+		//#endregion
 
 		//#region static assets
 
